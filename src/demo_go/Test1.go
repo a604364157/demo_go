@@ -32,6 +32,8 @@ func main() {
 	//创建生产者并且 并发goroutine
 	go producer("A", channel)
 	go producer("B", channel)
+	go producer("C", channel)
+	go producer("D", channel)
 	//消费
 	customer(channel)
 }

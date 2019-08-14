@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	user := entity.User.C
+	user := entity.GetUser("蕊英", 18, "女")
 	user.Say()
 	fmt.Println(time.Now().String())
 	for true {

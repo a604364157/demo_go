@@ -8,7 +8,7 @@ type User struct {
 	sex  string
 }
 
-func (user *User) C(name string, age int, sex string) User {
+func GetUser(name string, age int, sex string) User {
 	return User{name: name, age: age, sex: sex}
 }
 
