@@ -75,3 +75,34 @@ func main2() {
 }
 
 //从切片删除元素
+func main() {
+	//a := []int{1, 2, 3}
+	//a = a[:len(a)-1] //删除尾部第一个元素
+	//a = a[:len(a)-n]//删除尾部n个元素
+
+	//a = a[1:] //删除头部1个元素
+	//a = a[n:]//删除头部n个元素
+
+	//使用append删除开头元素
+	//a = append(a[:0], a[1:]...) //删除头部1个元素
+	//a = append(a[:0], a[n:]...)//删除头部n个元素
+
+	//使用copy完成删除开头元素
+	//a = a[:copy(a, a[1:])] //删除头部1个元素
+	//a = a[:copy(a, a[n:])]//删除头部n个元素
+
+	//删除中间元素
+	//a = append(a[:i], a[i+1:]...)//删除中间i位置的1个元素
+	//a = append(a[:i], a[i+n:]...)//删除中间i位置开始n个元素
+	//a = a[:i+copy(a[i:], a[i+1:])]//删除中间i位置的1个元素
+	//a = a[:i+copy(a[i:], a[i+n:])]//删除中间i位置的1个元素
+
+	//删除切片指定位置的元素
+	seq := []string{"a", "b", "c", "d", "e"}
+	index := 2
+	// 查看删除位置之前的元素和之后的元素
+	fmt.Println(seq[:index], seq[index+1:])
+	// 将删除点前后的元素连接起来
+	seq = append(seq[:index], seq[index+1:]...)
+	fmt.Println(seq)
+}
