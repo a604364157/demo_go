@@ -70,7 +70,61 @@ func func20() {
 	fmt.Println(a)
 }
 
-//
+//结构体是值类型
+func func21() {
+	fmt.Println("-------------------func21----------------")
+	a := user{"王小明", 25, true}
+	b := user{"王小明", 25, true}
+	//可见两个值相等，但是指针不相等
+	fmt.Println(a == b)
+	fmt.Println(&a == &b)
+
+	//如果结果体保护的字段不可比较，那么结构体不可比较
+	type image struct {
+		data map[string]int
+	}
+	m := map[string]int{"a": 1, "b": 2, "c": 3}
+	c := image{m}
+	d := image{m}
+	//fmt.Println(c == d) 不可比较，编译报错
+	fmt.Println(c, d)
+	func23(a)
+}
+
+//结构体作为参数
+func func23(u user) {
+	fmt.Println(u)
+}
+
+type Employee struct {
+	name     string
+	salary   int
+	currency string
+}
+
+//方法定义（方法和函数类似）
+func func24(e Employee) {
+	fmt.Println(e)
+}
+
+//结构体中的函数继承（在test03中，我们定义了user和worker）
+//给user定义一个函数
+func (u *user) SayHi() {
+	fmt.Println("hello ", u.name)
+}
+
+func func25() {
+	a := user{"王小明", 25, true}
+	b := worker{a, 5000}
+	//因为worker包含了user，当user定义的函数，worker就自动继承了该函数
+	a.SayHi()
+	b.SayHi()
+}
+
+//函数的重写(注释掉这个函数，执行效果不一样)
+func (w worker) SayHi() {
+	fmt.Println("Hi ", w.name)
+}
 
 func main() {
 	func16()
@@ -78,4 +132,8 @@ func main() {
 	func18()
 	func19()
 	func20()
+	func21()
+	emp := Employee{"王小明", 5000, "$"}
+	func24(emp)
+	func25()
 }
