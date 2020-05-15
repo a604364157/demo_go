@@ -112,8 +112,37 @@ func func28() {
 	something.Get()
 }
 
+//go语言既是静态语言,又有动态语言的便利性,这体现在接口的实现上
+//go语言实现接口的方式,是实现接口中的函数,而不是直接实现接口
+
+//接口的断言,因为所有的函数都实现了空接口,当函数的参数是 interface{}时,
+//理论可以接收任意对象,那么要获取到真实的对象类型,需要断言
+func func29() {
+	fmt.Println("-------------------func29-------------------")
+	var i interface{} = new(T04a)
+	//不安全断言(这里会直接panic掉)
+	//s := i.(T04a)
+	//fmt.Println(s)
+	//安全断言
+	s2, ok := i.(T04a)
+	fmt.Println(s2, ok)
+
+	//switch 方式
+	switch ins := i.(type) {
+	case T04a:
+		fmt.Println("T04a。。。", ins)
+	case T04b:
+		fmt.Println("T04b。。。。", ins)
+	case T04c:
+		fmt.Println("T04c。。", ins)
+	default:
+		fmt.Println("default。。", ins)
+	}
+}
+
 func main() {
 	func26()
 	func27()
 	func28()
+	func29()
 }
