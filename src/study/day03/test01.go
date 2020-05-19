@@ -2,8 +2,13 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strconv"
 )
 
 //os.FileInfo()接口定义了文件的相关信息
@@ -78,6 +83,319 @@ func func01() {
 	fmt.Println(fileInfo.Mode())
 }
 
+/*
+   文件操作：
+   1.路径：
+       相对路径：relative
+           ab.txt
+           相对于当前工程
+       绝对路径：absolute
+           /Users/ruby/Documents/pro/a/aa.txt
+
+       .当前目录
+       ..上一层
+   2.创建文件夹，如果文件夹存在，创建失败
+       os.MkDir()，创建一层
+       os.MkDirAll()，可以创建多层
+
+   3.创建文件，Create采用模式0666（任何人都可读写，不可执行）创建一个名为name的文件，如果文件已存在会截断它（为空文件）
+       os.Create()，创建文件
+
+   4.打开文件：让当前的程序，和指定的文件之间建立一个连接
+       os.Open(filename)
+       os.OpenFile(filename,mode,perm)
+
+   5.关闭文件：程序和文件之间的链接断开。
+       file.Close()
+
+   5.删除文件或目录：慎用，慎用，再慎用
+       os.Remove()，删除文件和空目录
+       os.RemoveAll()，删除所有
+*/
+func func02() {
+	fmt.Println("-----------------func02------------------------")
+	//绝对路径
+	fileName1 := "E:\\workspaces\\demo\\demo_go\\src\\study\\day03\\resources\\1.txt"
+	//相对路径(看项目配置,是文件运行还是包运行,相对的起点不一样)
+	fileName2 := "src\\study\\day03\\resources\\1.txt"
+	//判断是否为绝对路径
+	fmt.Println(filepath.IsAbs(fileName1))
+	fmt.Println(filepath.IsAbs(fileName2))
+	//返回文件的绝对路径
+	fmt.Println(filepath.Abs(fileName1))
+	fmt.Println(filepath.Abs(fileName2))
+
+	//创建目录(路径,权限)
+	err := os.Mkdir("E:\\workspaces\\demo\\demo_go\\src\\study\\day03\\resources\\test", os.ModePerm)
+	if err != nil {
+		fmt.Println("发生error:", err)
+	}
+
+	//可以创建多层目录
+	err2 := os.MkdirAll("E:\\workspaces\\demo\\demo_go\\src\\study\\day03\\resources\\test", os.ModePerm)
+	if err2 != nil {
+		fmt.Println("发生error:", err2)
+	}
+
+	//创建文件,默认0666
+	file1, err3 := os.Create("src\\study\\day03\\resources\\test\\1.txt")
+	if err3 != nil {
+		fmt.Println("发生error:", err3)
+	}
+	fmt.Println(file1)
+
+	//打开文件(默认只读)
+	file2, err4 := os.Open(fileName2)
+	if err4 != nil {
+		fmt.Println("发生error:", err4)
+	}
+	fmt.Println(file2)
+
+	//打开文件(文件名,打开方式[读写],文件的权限,不存在则创建)
+	file3, err := os.OpenFile(fileName2, os.O_RDWR, os.ModePerm)
+	fmt.Println(file3)
+
+	//关闭文件
+	if file3 != nil {
+		file3.Close()
+	}
+
+	//删除
+	//os.Remove("")
+	//os.RemoveAll("")
+}
+
+//io操作 Reader和Writer接口
+func func03() {
+	fmt.Println("----------------func03-------------------")
+	//读取数据
+	fileName := "src\\study\\day03\\resources\\1.txt"
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Println("err:", err)
+		return
+	}
+	defer file.Close()
+	data := make([]byte, 100, 100)
+	i := -1
+	for {
+		i, err = file.Read(data)
+		if i == 0 || err == io.EOF {
+			fmt.Println("文件读取完毕")
+			break
+		}
+		fmt.Println(string(data[:i]))
+	}
+}
+
+//文件拷贝
+func func04(srcFile, destFile string) (int, error) {
+	file, err := os.Open(srcFile)
+	if err != nil {
+		return 0, err
+	}
+	fileCopy, err := os.OpenFile(destFile, os.O_WRONLY|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		return 0, err
+	}
+	defer file.Close()
+	defer fileCopy.Close()
+	bs := make([]byte, 1024, 1024)
+	n := -1
+	total := 0
+	for {
+		n, err = file.Read(bs)
+		if err == io.EOF || n == 0 {
+			fmt.Println("复制完毕")
+			break
+		} else if err != nil {
+			fmt.Println("发生异常")
+			return total, err
+		}
+		total += n
+		fileCopy.Write(bs[:n])
+	}
+	return total, nil
+}
+
+//io包下的copy函数
+func func05(srcFile, destFile string) (int64, error) {
+	file, err := os.Open(srcFile)
+	if err != nil {
+		return 0, err
+	}
+	fileCopy, err := os.OpenFile(destFile, os.O_WRONLY|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		return 0, err
+	}
+	defer file.Close()
+	defer fileCopy.Close()
+	return io.Copy(fileCopy, file)
+	//Copy（dst,src） 为复制src 全部到 dst 中。
+	//CopyN(dst,src,n) 为复制src 中 n 个字节到 dst
+	//CopyBuffer（dst,src,buf）为指定一个buf缓存区，以这个大小完全复制。
+}
+
+//ioutil包进行小文件复制(因为一次性读取,文件过大会内存溢出)
+func func06(srcFile, destFile string) (int, error) {
+	input, err := ioutil.ReadFile(srcFile)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+	err = ioutil.WriteFile(destFile, input, 0777)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+	return len(input), nil
+}
+
+//基于Seeker接口实现断点续传
+func func07(srcFile, destFile string) {
+	tempFile := destFile + "temp"
+	file, _ := os.Open(srcFile)
+	fileCopy, _ := os.OpenFile(destFile, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	fileTemp, _ := os.OpenFile(tempFile, os.O_CREATE|os.O_RDWR, os.ModePerm)
+	defer file.Close()
+	defer fileCopy.Close()
+	//1.读取临时文件中的数据(seek)
+	fileTemp.Seek(0, io.SeekStart)
+	bs := make([]byte, 100, 100)
+	n1, err := fileTemp.Read(bs)
+	if err != nil {
+		return
+	}
+	fmt.Println(n1)
+	countStr := string(bs[:n1])
+	count, _ := strconv.ParseInt(countStr, 10, 64)
+	fmt.Println(count)
+
+	//2.设置独写的偏移量
+	file.Seek(count, 0)
+	fileCopy.Seek(count, 0)
+	data := make([]byte, 1024, 1024)
+	n2 := -1
+	n3 := -1
+	total := int(count)
+	for {
+		//3.读取数据
+		n2, err = file.Read(data)
+		if err == io.EOF {
+			fmt.Println("复制完毕")
+			fileTemp.Close()
+			os.Remove(tempFile)
+			break
+		}
+		//将数据写入目标文件
+		n3, _ = fileCopy.Write(data[:n2])
+		total += n3
+		//将复制的总量,存到临时文件
+		fileTemp.Seek(0, io.SeekStart)
+		fileTemp.WriteString(strconv.Itoa(total))
+	}
+}
+
+//bufio包:带缓存的io操作
+func func08() {
+	fileName := "src\\study\\day03\\resources\\1.txt"
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+
+	//bufio高效读取
+	reader := bufio.NewReader(file)
+	bytes := make([]byte, 1024)
+	read, err := reader.Read(bytes)
+	fmt.Println(string(bytes[:read]))
+
+	//读取一行
+	line, prefix, err := reader.ReadLine()
+	fmt.Println(line, prefix, err, string(line))
+
+	//读取字符
+	for {
+		line, err := reader.ReadString('\n')
+		if err == io.EOF {
+			fmt.Println("读取完毕")
+			break
+		}
+		fmt.Println(line)
+	}
+
+	//读取byte
+	for {
+		line, err := reader.ReadBytes('\n')
+		if err == io.EOF {
+			fmt.Println("读取完毕")
+			break
+		}
+		fmt.Println(string(line))
+	}
+}
+
+//bufio包:带缓存的io操作
+func func09() {
+	fileName := "src\\study\\day03\\resources\\2.txt"
+	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+	//bufio高效写入
+	writer := bufio.NewWriter(file)
+	for i := 1; i < 100; i++ {
+		writer.WriteString(fmt.Sprintf("%d%d%d%d%d%d%d%d%d%d", i, i, i, i, i, i, i, i, i, i))
+	}
+	writer.Flush()
+}
+
+func func10() {
+	// Discard 是一个 io.Writer 接口，调用它的 Write 方法将不做任何事情
+	// 并且始终成功返回。
+	//var Discard io.Writer = devNull(0)
+
+	// ReadAll 读取 r 中的所有数据，返回读取的数据和遇到的错误。
+	// 如果读取成功，则 err 返回 nil，而不是 EOF，因为 ReadAll 定义为读取
+	// 所有数据，所以不会把 EOF 当做错误处理。
+	//func ReadAll(r io.Reader) ([]byte, error)
+
+	// ReadFile 读取文件中的所有数据，返回读取的数据和遇到的错误。
+	// 如果读取成功，则 err 返回 nil，而不是 EOF
+	//func ReadFile(filename string) ([]byte, error)
+
+	// WriteFile 向文件中写入数据，写入前会清空文件。
+	// 如果文件不存在，则会以指定的权限创建该文件。
+	// 返回遇到的错误。
+	//func WriteFile(filename string, data []byte, perm os.FileMode) error
+
+	// ReadDir 读取指定目录中的所有目录和文件（不包括子目录）。
+	// 返回读取到的文件信息列表和遇到的错误，列表是经过排序的。
+	//func ReadDir(dirname string) ([]os.FileInfo, error)
+
+	// NopCloser 将 r 包装为一个 ReadCloser 类型，但 Close 方法不做任何事情。
+	//func NopCloser(r io.Reader) io.ReadCloser
+
+	// TempFile 在 dir 目录中创建一个以 prefix 为前缀的临时文件，并将其以读
+	// 写模式打开。返回创建的文件对象和遇到的错误。
+	// 如果 dir 为空，则在默认的临时目录中创建文件（参见 os.TempDir），多次
+	// 调用会创建不同的临时文件，调用者可以通过 f.Name() 获取文件的完整路径。
+	// 调用本函数所创建的临时文件，应该由调用者自己删除。
+	//func TempFile(dir, prefix string) (f *os.File, err error)
+
+	// TempDir 功能同 TempFile，只不过创建的是目录，返回目录的完整路径。
+	//func TempDir(dir, prefix string) (name string, err error)
+}
+
 func main() {
 	func01()
+	func02()
+	func03()
+	func04("src\\study\\day03\\resources\\1.txt", "src\\study\\day03\\resources\\2.txt")
+	func05("src\\study\\day03\\resources\\1.txt", "src\\study\\day03\\resources\\3.txt")
+	func06("src\\study\\day03\\resources\\1.txt", "src\\study\\day03\\resources\\4.txt")
 }
