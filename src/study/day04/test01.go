@@ -149,6 +149,70 @@ func func07() {
 	//我们通过锁,锁住了逻辑代码块,代码块在同一时间只能有一个协程执行
 }
 
+//说到了锁,我们再来说一下WaitGroup同步等待组
+func func08() {
+	//Add(),Done(),Wait()函数解释
+	//Add(),等待组中执行协程得数量
+	//Done(),某个协程执行完毕后,让WaitGroup的counter数值减1 本质是 Add(-1)
+	//Wait(),让当前协程阻塞,直到等待组内协程执行完毕
+	//使用实例参考func07
+}
+
+//func07还使用到了 sync.Mutex 互斥锁
+func func09() {
+	//Go语言包中的 sync 包提供了两种锁类型：sync.Mutex 和 sync.RWMutex。
+	//Mutex 是最简单的一种锁类型，互斥锁
+	//Lock锁定当前的共享资源，Unlock进行解锁
+	//使用实例参考func07
+}
+
+//ync.RWMutex 读写锁(只能有一个协程获得写锁,可以有多个协程获取读锁)
+func func10() {
+	rwMutex := new(sync.RWMutex)
+	wg := new(sync.WaitGroup)
+
+	r := func(i int) {
+		defer wg.Done()
+		fmt.Println(i, "read start")
+		rwMutex.RLock() //加上读锁
+		fmt.Println(i, "reading")
+		time.Sleep(3 * time.Second)
+		rwMutex.RUnlock() //解除读锁
+		fmt.Println(i, "read over")
+	}
+	fmt.Println(r)
+	w := func(i int) {
+		defer wg.Done()
+		fmt.Println(i, "write start")
+		rwMutex.Lock()
+		fmt.Println(i, "writing")
+		time.Sleep(3 * time.Second)
+		rwMutex.Unlock()
+		fmt.Println(i, "write over")
+	}
+	fmt.Println(w)
+
+	wg.Add(3)
+
+	//模拟多个读操作
+	//go r(1)
+	//go r(2)
+	//go r(3)
+
+	//模拟多个写操作
+	go w(1)
+	go r(2)
+	go w(3)
+
+	wg.Wait()
+	fmt.Println("func10 执行完毕")
+
+	/*读锁不能阻塞读锁
+	读锁需要阻塞写锁，直到所有读锁都释放
+	写锁需要阻塞读锁，直到所有写锁都释放
+	写锁需要阻塞写锁*/
+}
+
 func main() {
 	//func01()
 	//func02()
@@ -156,5 +220,6 @@ func main() {
 	//func04()
 	//func05()
 	//func06()
-	func07()
+	//func07()
+	func10()
 }
