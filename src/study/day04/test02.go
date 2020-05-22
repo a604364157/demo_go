@@ -8,6 +8,8 @@ func func11() {
 	//通道得声明
 	a := make(chan int)
 	fmt.Println(a)
+	//channel的数据类型
+	fmt.Printf("%T,%p\n", a, a)
 }
 
 func main() {
