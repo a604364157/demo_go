@@ -8,8 +8,10 @@ import (
 
 func main() {
 	//utils.InitTable()
-	user := models.QueryUser("where 1=1")
+	user := models.QueryUserById(1)
 	fmt.Println(user)
+	users := models.QueryUsers(user)
+	fmt.Println(users)
 	//beego.Run("localhost:8080")
 }
 
