@@ -1,18 +1,12 @@
 package main
 
 import (
-	"demo_beego/models"
 	_ "demo_beego/routers"
-	"fmt"
+	"github.com/astaxie/beego"
 )
 
 func main() {
-	//utils.InitTable()
-	user := models.QueryUserById(1)
-	fmt.Println(user)
-	users := models.QueryUsers(user)
-	fmt.Println(users)
-	//beego.Run("localhost:8080")
+	beego.Run("localhost:8080")
 }
 
 //beego框架
