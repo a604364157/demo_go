@@ -1,1 +1,3 @@
 # Created by .ignore support plugin (hsz.mobi)
+/src/demo_beego/conf/app.conf
+/src/demo_beego/tests/
