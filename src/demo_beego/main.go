@@ -1,12 +1,15 @@
 package main
 
 import (
+	"demo_beego/models"
 	_ "demo_beego/routers"
-	"demo_beego/utils"
+	"fmt"
 )
 
 func main() {
-	utils.InitTable()
+	//utils.InitTable()
+	user := models.QueryUser("where 1=1")
+	fmt.Println(user)
 	//beego.Run("localhost:8080")
 }
 
