@@ -12,6 +12,32 @@ type Article struct {
 	CreateTime int64
 }
 
+func QueryArticlePage(art Article, num, size int) []Article {
+	qt := getDb().QueryTable(&art)
+	if art.Id != 0 {
+		qt.Filter("id", art.Id)
+	}
+	if art.Title != "" {
+		qt.Filter("title", art.Title)
+	}
+	if art.Author != "" {
+		qt.Filter("author", art.Author)
+	}
+	if art.Tags != "" {
+		qt.Filter("tags", art.Tags)
+	}
+	if art.Short != "" {
+		qt.Filter("short", art.Short)
+	}
+	qt.Limit((num-1)*size, num*size)
+	var arts []Article
+	_, err := qt.All(arts)
+	if err != nil {
+		logs.GetBeeLogger().Info("查询失败")
+	}
+	return arts
+}
+
 func InsertArticle(article Article) error {
 	_, err := getDb().Insert(&article)
 	if err != nil {
