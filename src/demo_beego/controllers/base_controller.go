@@ -1,14 +1,13 @@
 package controllers
 
 import (
-	"demo_beego/models"
 	"github.com/astaxie/beego"
 )
 
 type BaseController struct {
 	beego.Controller
 	IsLogin   bool
-	LoginUser models.User
+	LoginUser interface{}
 }
 
 //判断是否登录
