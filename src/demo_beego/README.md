@@ -24,6 +24,8 @@
     port = xxx
     dbname = blog
     
+    sessionon = true
+    
 ###三,创建并初始化数据库
     在配置的数据库中建立数据库blog
     工程已提供utils/util.go工具类

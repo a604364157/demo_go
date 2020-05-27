@@ -1,9 +1,7 @@
 package models
 
 import (
-	"demo_beego/commom/constants"
 	"github.com/astaxie/beego/logs"
-	"github.com/astaxie/beego/orm"
 )
 
 type User struct {
@@ -13,10 +11,6 @@ type User struct {
 	PassWord   string `orm:"size(64)"`
 	Status     int
 	CreateTime int64
-}
-
-func init() {
-	orm.RunSyncdb(constants.DEFAULT, false, true)
 }
 
 func QueryUserById(id int) User {

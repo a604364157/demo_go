@@ -6,6 +6,8 @@ import (
 )
 
 func main() {
+	//beego.BConfig.WebConfig.Session.SessionOn = true
+	//开启session,可以在配置里加sessionon = true
 	beego.Run("localhost:8080")
 }
 

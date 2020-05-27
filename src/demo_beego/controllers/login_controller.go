@@ -21,6 +21,7 @@ func (c *LoginController) Post() {
 	logs.GetBeeLogger().Info("入参:", username, password)
 	user := models.QueryUserByName(username)
 	if user.PassWord == utils.MD5(password) {
+		c.SetSession("username", user)
 		c.Data["json"] = map[string]interface{}{"code": 0, "message": "登录成功"}
 	} else {
 		c.Data["json"] = map[string]interface{}{"code": 1, "message": "用户名或密码错误"}

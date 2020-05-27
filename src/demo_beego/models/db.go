@@ -27,6 +27,7 @@ func init() {
 		return
 	}
 	RegisterModels()
+	orm.RunSyncdb(constants.DEFAULT, false, true)
 	logs.GetBeeLogger().Info("初始化数据库成功")
 	runmode := beego.AppConfig.String("runmode")
 	if runmode == "dev" {
@@ -37,6 +38,7 @@ func init() {
 //注册model对象
 func RegisterModels() {
 	orm.RegisterModel(new(User))
+	orm.RegisterModel(new(Article))
 }
 
 func getDb() orm.Ormer {
