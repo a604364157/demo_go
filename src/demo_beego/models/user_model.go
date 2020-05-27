@@ -29,6 +29,16 @@ func QueryUserById(id int) User {
 	return *user
 }
 
+func QueryUserByName(name string) User {
+	user := new(User)
+	user.UserName = name
+	err := getDb().Read(user, "UserName")
+	if err != nil {
+		logs.GetBeeLogger().Info("查询失败")
+	}
+	return *user
+}
+
 func QueryUsers(user User) []User {
 	qt := getDb().QueryTable(&user)
 	if user.Id != 0 {
