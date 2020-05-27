@@ -20,6 +20,6 @@ func (c *HomeController) Get() {
 	articles := models.QueryArticlePage(article, page, 10)
 	c.Data["PageCode"] = 1
 	c.Data["HasFooter"] = true
-	c.Data["Content"] = articles
+	c.Data["Content"] = models.MakeHomeBlocks(articles, c.IsLogin)
 	c.TplName = "home.html"
 }

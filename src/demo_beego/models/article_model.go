@@ -12,6 +12,14 @@ type Article struct {
 	CreateTime int64
 }
 
+func CountArticle() int {
+	count, err := getDb().QueryTable(new(Article)).Count()
+	if err != nil {
+		logs.GetBeeLogger().Info("查询失败")
+	}
+	return int(count)
+}
+
 func QueryArticlePage(art Article, num, size int) []Article {
 	qt := getDb().QueryTable(&art)
 	if art.Id != 0 {
@@ -31,7 +39,7 @@ func QueryArticlePage(art Article, num, size int) []Article {
 	}
 	qt.Limit((num-1)*size, num*size)
 	var arts []Article
-	_, err := qt.All(arts)
+	_, err := qt.All(&arts)
 	if err != nil {
 		logs.GetBeeLogger().Info("查询失败")
 	}
