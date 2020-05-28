@@ -54,7 +54,6 @@ func MakeHomeBlocks(articles []Article, isLogin bool) template.HTML {
 		homeParam.Id = art.Id
 		homeParam.Title = art.Title
 		homeParam.Tags = createTagsLinks(art.Tags)
-		fmt.Println("tag-->", art.Tags)
 		homeParam.Short = art.Short
 		homeParam.Content = art.Content
 		homeParam.Author = art.Author
@@ -94,16 +93,13 @@ func ConfigHomeFooterPageCode(page int) HomeFooterPageCode {
 	pageRow, _ := beego.AppConfig.Int("articleListPageNum")
 	//计算出总页数
 	allPageNum := (num-1)/pageRow + 1
-
 	pageCode.ShowPage = fmt.Sprintf("%d/%d", page, allPageNum)
-
 	//当前页数小于等于1，那么上一页的按钮不能点击
 	if page <= 1 {
 		pageCode.HasPre = false
 	} else {
 		pageCode.HasPre = true
 	}
-
 	//当前页数大于等于总页数，那么下一页的按钮不能点击
 	if page >= allPageNum {
 		pageCode.HasNext = false
