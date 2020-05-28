@@ -46,6 +46,16 @@ func QueryArticlePage(art Article, num, size int) []Article {
 	return arts
 }
 
+func QueryArticleById(id int) Article {
+	art := new(Article)
+	art.Id = id
+	err := getDb().Read(art)
+	if err != nil {
+		logs.GetBeeLogger().Info("查询失败")
+	}
+	return *art
+}
+
 func InsertArticle(article Article) error {
 	_, err := getDb().Insert(&article)
 	if err != nil {
