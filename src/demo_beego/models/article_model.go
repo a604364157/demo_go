@@ -63,3 +63,11 @@ func InsertArticle(article Article) error {
 	}
 	return err
 }
+
+func UpdateArticle(article Article) error {
+	_, err := getDb().Update(&article)
+	if err != nil {
+		logs.GetBeeLogger().Info("更新文章数据失败")
+	}
+	return err
+}

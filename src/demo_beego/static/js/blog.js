@@ -144,10 +144,9 @@ $(document).ready(function () {
                 type: "post",
                 dataType: "json",
                 success: function (data, status) {
-                    alert(":data:" + data.message);
                     setTimeout(function () {
                         window.location.href = "/"
-                    }, 1000)
+                    }, 100)
                 },
                 error: function (data, status) {
                     alert("err:" + data.message + ":" + status)

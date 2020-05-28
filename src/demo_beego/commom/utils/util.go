@@ -39,9 +39,6 @@ func MarkdownToHtml(content string) template.HTML {
 	doc.Find("code").Each(func(i int, selection *goquery.Selection) {
 		light, _ := syntaxhighlight.AsHTML([]byte(selection.Text()))
 		selection.SetHtml(string(light))
-		fmt.Println(selection.Html())
-		fmt.Println("light:", string(light))
-		fmt.Println("\n\n\n")
 	})
 	htmlString, _ := doc.Html()
 	return template.HTML(htmlString)
