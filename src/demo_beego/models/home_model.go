@@ -2,9 +2,9 @@ package models
 
 import (
 	"bytes"
+	"demo_beego/commom/constants"
 	"demo_beego/commom/utils"
 	"fmt"
-	"github.com/astaxie/beego"
 	"html/template"
 	"strconv"
 	"strings"
@@ -20,11 +20,9 @@ type HomeBlockParam struct {
 	CreateTime string
 	//查看文章的地址
 	Link string
-
 	//修改文章的地址
 	UpdateLink string
 	DeleteLink string
-
 	//记录是否登录
 	IsLogin bool
 }
@@ -37,7 +35,7 @@ type TagLink struct {
 /**
  * 分页的结构体
  */
-type HomeFooterPageCode struct {
+type HomeFooterPage struct {
 	HasPre   bool
 	HasNext  bool
 	ShowPage string
@@ -85,14 +83,13 @@ func createTagsLinks(tags string) []TagLink {
 
 //-----------翻页-----------
 //page是当前的页数
-func ConfigHomeFooterPageCode(page int) HomeFooterPageCode {
-	pageCode := HomeFooterPageCode{}
+func CreateHomeFooterPage(page int) HomeFooterPage {
+	pageCode := HomeFooterPage{}
 	//查询出总的条数
 	num := CountArticle()
 	//从配置文件中读取每页显示的条数
-	pageRow, _ := beego.AppConfig.Int("articleListPageNum")
 	//计算出总页数
-	allPageNum := (num-1)/pageRow + 1
+	allPageNum := (num-1)/constants.PageNum + 1
 	pageCode.ShowPage = fmt.Sprintf("%d/%d", page, allPageNum)
 	//当前页数小于等于1，那么上一页的按钮不能点击
 	if page <= 1 {

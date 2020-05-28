@@ -91,11 +91,10 @@ $(document).ready(function () {
                 type: "post",
                 dataType: "json",
                 success: function (data, status) {
-                    alert("data:" + data.message + ":" + status)
                     if (data.code == 0) {
                         setTimeout(function () {
                             window.location.href = "/"
-                        }, 1000)
+                        }, 100)
                     }
                 },
                 error: function (data, status) {

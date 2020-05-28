@@ -18,6 +18,6 @@ func MD5(str string) string {
 }
 
 func TimeStampToData(timesTamp int64) string {
-	datetime := time.Unix(timesTamp, 0).Format(constants.FORMT_DATE)
+	datetime := time.Unix(timesTamp, 0).Format(constants.FormatDate)
 	return datetime
 }
