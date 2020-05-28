@@ -28,9 +28,9 @@
     
 ###三,创建并初始化数据库
     在配置的数据库中建立数据库blog
-    工程已提供utils/util.go工具类
-    运行InitTable函数,即可初始化相关表和初始数据
-    后续开发会逐渐补充初始化脚本
+    配置正确数据库后,启动工程
+    会自动初始化相关表
+    相关逻辑见db.go
     
 ###四,讲一个坑
     项目的配置应该规矩go项目的目录规则
@@ -39,5 +39,8 @@
     demo_beego应放在主工程的src目录下
     项目的根目录为[主工程/src/]
     
-
+###五,引入markdown
+    go get github.com/russross/blackfriday
+    go get github.com/PuerkitoBio/goquery
+    go get github.com/sourcegraph/syntaxhighlight
 

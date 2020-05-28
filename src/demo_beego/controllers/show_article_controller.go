@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"demo_beego/commom/utils"
 	"demo_beego/models"
 	"strconv"
 )
@@ -15,6 +16,6 @@ func (c *ShowArticleController) Get() {
 	id, _ := strconv.Atoi(param)
 	art := models.QueryArticleById(id)
 	c.Data["Title"] = art.Title
-	c.Data["Content"] = art.Content
+	c.Data["Content"] = utils.MarkdownToHtml(art.Content)
 	c.TplName = "show_article.html"
 }
