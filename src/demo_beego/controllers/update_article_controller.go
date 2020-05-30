@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"demo_beego/models"
+	"time"
 )
 
 type UpdateArticleController struct {
@@ -31,7 +32,7 @@ func (c *UpdateArticleController) Post() {
 	login := c.LoginUser
 	user := login.(models.User)
 	//实例化model，修改数据库
-	art := models.Article{Id: id, Title: title, Author: user.UserName, Tags: tags, Short: short, Content: content}
+	art := models.Article{Id: id, Title: title, Author: user.UserName, Tags: tags, Short: short, Content: content, CreateTime: time.Now().Unix()}
 	err := models.UpdateArticle(art)
 	//返回数据给浏览器
 	if err == nil {

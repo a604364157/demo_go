@@ -71,3 +71,13 @@ func UpdateArticle(article Article) error {
 	}
 	return err
 }
+
+func DeleteArticle(id int) bool {
+	art := new(Article)
+	art.Id = id
+	num, err := getDb().Delete(art)
+	if err != nil {
+		logs.GetBeeLogger().Info("删除文章数据失败")
+	}
+	return num > 0
+}
