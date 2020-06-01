@@ -29,8 +29,8 @@ func init() {
 	RegisterModels()
 	orm.RunSyncdb(constants.DEFAULT, false, true)
 	logs.GetBeeLogger().Info("初始化数据库成功")
-	runmode := beego.AppConfig.String("runmode")
-	if runmode == "dev" {
+	runMode := beego.AppConfig.String("runmode")
+	if runMode == "dev" {
 		orm.Debug = true
 	}
 }
