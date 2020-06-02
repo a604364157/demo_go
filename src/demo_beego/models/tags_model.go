@@ -18,7 +18,7 @@ func HandleTags(tags []string) map[string]int {
 
 func QueryArticleTags() []string {
 	var tags []string
-	rows, err := getDb().Raw("select distinct tags from article").QueryRows(&tags)
+	rows, err := getDb().Raw("select tags from article").QueryRows(&tags)
 	fmt.Println(rows, err)
 	return tags
 }

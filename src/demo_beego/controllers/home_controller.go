@@ -22,7 +22,7 @@ func (c *HomeController) Get() {
 		article.Tags = tag
 	}
 	articles := models.QueryArticlePage(article, page, 10)
-	c.Data["PageCode"] = models.CreateHomeFooterPage(page)
+	c.Data["PageCode"] = models.CreateHomeFooterPage(page, tag)
 	c.Data["HasFooter"] = true
 	c.Data["Content"] = models.MakeHomeBlocks(articles, c.IsLogin)
 	c.TplName = "home.html"

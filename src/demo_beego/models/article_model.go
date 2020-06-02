@@ -20,24 +20,39 @@ func CountArticle() int {
 	return int(count)
 }
 
+/*
+gt	greater的缩写，表示大于的意思	>
+gte	greater than or equal的缩写，即大于等于	>=
+lt	less than的缩写，表示小于	<
+lte	less thanor equal的缩写，小于等于	<=
+in	等同与sql语言中的in	in
+exact	等于	=
+contains	包含，一般用于字符类型，如包含某某字符	like '%查询内容%'
+startswith	以…起始，一般用于字符类型，如从什么字符开始	like '开始字符%'
+endswith	以…结束 ，一般用于字符类型，如以什么字符结束	like '%结束字符'
+isnull	表示改字段不能为空
+
+加i表示忽略大小写 入 icontains
+*/
+
 func QueryArticlePage(art Article, num, size int) []Article {
 	qt := getDb().QueryTable(&art)
 	if art.Id != 0 {
-		qt.Filter("id", art.Id)
+		qt = qt.Filter("id__exact", art.Id)
 	}
 	if art.Title != "" {
-		qt.Filter("title", art.Title)
+		qt = qt.Filter("title__exact", art.Title)
 	}
 	if art.Author != "" {
-		qt.Filter("author", art.Author)
+		qt = qt.Filter("author__exact", art.Author)
 	}
 	if art.Tags != "" {
-		qt.Filter("tags", art.Tags)
+		qt = qt.Filter("tags__icontains", art.Tags)
 	}
 	if art.Short != "" {
-		qt.Filter("short", art.Short)
+		qt = qt.Filter("short__exact", art.Short)
 	}
-	qt.Limit((num-1)*size, num*size)
+	qt = qt.Limit(size, (num-1)*size)
 	var arts []Article
 	_, err := qt.All(&arts)
 	if err != nil {

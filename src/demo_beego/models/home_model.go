@@ -81,9 +81,8 @@ func createTagsLinks(tags string) []TagLink {
 	return tagLink
 }
 
-//-----------翻页-----------
 //page是当前的页数
-func CreateHomeFooterPage(page int) HomeFooterPage {
+func CreateHomeFooterPage(page int, tag string) HomeFooterPage {
 	pageCode := HomeFooterPage{}
 	//查询出总的条数
 	num := CountArticle()
@@ -103,7 +102,12 @@ func CreateHomeFooterPage(page int) HomeFooterPage {
 	} else {
 		pageCode.HasNext = true
 	}
-	pageCode.PreLink = "/?page=" + strconv.Itoa(page-1)
-	pageCode.NextLink = "/?page=" + strconv.Itoa(page+1)
+	if tag != "" {
+		pageCode.PreLink = fmt.Sprintf("/?tag=%s&page=%s", tag, strconv.Itoa(page-1))
+		pageCode.NextLink = fmt.Sprintf("/?tag=%s&page=%s", tag, strconv.Itoa(page+1))
+	} else {
+		pageCode.PreLink = "/?page=" + strconv.Itoa(page-1)
+		pageCode.NextLink = "/?page=" + strconv.Itoa(page+1)
+	}
 	return pageCode
 }
