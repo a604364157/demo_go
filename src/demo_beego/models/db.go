@@ -39,6 +39,7 @@ func init() {
 func RegisterModels() {
 	orm.RegisterModel(new(User))
 	orm.RegisterModel(new(Article))
+	orm.RegisterModel(new(Album))
 }
 
 func getDb() orm.Ormer {
