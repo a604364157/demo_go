@@ -13,3 +13,17 @@
     直接运行main函数,会出现很多找不到包
     然后根据提示路径,下载依赖包到对应路径即可
     
+
+###二,配置文件config/app.json(数据同步至config/config.go内的结构体,请自行添加相关配置)
+```json
+{
+  "app_name": "demo_gin",
+  "app_mode": "debug",
+  "app_host": "localhost",
+  "app_port": "8080",
+  "mail_user": "xxxxxxx@163.com",
+  "mail_password": "xxxxxxxxxxxxxx",
+  "mail_host": "smtp.163.com",
+  "mail_port": "465"
+}
+```

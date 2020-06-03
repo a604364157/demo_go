@@ -17,6 +17,13 @@ type Config struct {
 	MailUserPassword string `json:"mail_password"`
 	MailUserHost     string `json:"mail_host"`
 	MailUserPort     string `json:"mail_port"`
+	//db
+	DbDriver string `json:"db_driver"`
+	DbHost   string `json:"db_host"`
+	DbPort   string `json:"db_port"`
+	DbUser   string `json:"db_user"`
+	DbPass   string `json:"db_pass"`
+	DbDb     string `json:"db_db"`
 }
 
 type MailConfig struct {
