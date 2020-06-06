@@ -11,12 +11,19 @@ var engine *xorm.Engine
 
 func init() {
 	cfg := config.GetConfig()
-	tcp := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbDb)
+	tcp := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4", cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbDb)
 	var err interface{}
 	engine, err = xorm.NewEngine(cfg.DbDriver, tcp)
+	engine.ShowSQL(true)
 	if err != nil {
 		panic(err)
 	}
+	syncTable()
+}
+
+//注册模型,同步生成表
+func syncTable() {
+	engine.Sync2(new(SmsCode))
 }
 
 //连接池也是DB操作对象
