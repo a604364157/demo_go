@@ -1,12 +1,14 @@
 package controller
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 type HelloController struct {
 }
 
 func (c *HelloController) Router(engine *gin.Engine) {
-	engine.GET("/hello", c.Hello)
+	engine.GET("/", c.Hello)
 }
 
 func (c *HelloController) Hello(context *gin.Context) {
