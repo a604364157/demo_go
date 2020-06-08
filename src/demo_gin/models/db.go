@@ -24,14 +24,15 @@ func init() {
 //注册模型,同步生成表
 func syncTable() {
 	engine.Sync2(new(SmsCode))
+	engine.Sync2(new(User))
 }
 
 //连接池也是DB操作对象
-func GetDb() *xorm.Engine {
+func getDb() *xorm.Engine {
 	return engine
 }
 
 //连接,用于带事务的操作,需手动关闭
-func GetSession() *xorm.Session {
+func getSession() *xorm.Session {
 	return engine.NewSession()
 }

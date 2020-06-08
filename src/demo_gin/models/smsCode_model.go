@@ -13,7 +13,7 @@ type SmsCode struct {
 
 func QuerySmsCodeById(id int) SmsCode {
 	var sms SmsCode
-	_, err := GetDb().ID(id).Get(&sms)
+	_, err := getDb().ID(id).Get(&sms)
 	if err != nil {
 		fmt.Println("查询验证码信息失败")
 	}
@@ -21,7 +21,7 @@ func QuerySmsCodeById(id int) SmsCode {
 }
 
 func QuerySmsCode(sms SmsCode) map[int64]SmsCode {
-	session := GetDb().Cols("id", "phone", "email", "biz_id", "code", "create_time")
+	session := getDb().Cols("id", "phone", "email", "biz_id", "code", "create_time")
 	if sms.Id != 0 {
 		session = session.Where("id = ?", sms.Id)
 	}
@@ -43,7 +43,7 @@ func QuerySmsCode(sms SmsCode) map[int64]SmsCode {
 }
 
 func InsertSmsCode(sms SmsCode) {
-	_, err := GetDb().Insert(&sms)
+	_, err := getDb().Insert(&sms)
 	if err != nil {
 		fmt.Println("写入验证码信息失败")
 	}
@@ -54,7 +54,7 @@ func UpdateSmsCode(sms SmsCode) {
 		fmt.Println("修改数据时,主键不能为空")
 		return
 	}
-	_, err := GetDb().ID(sms.Id).Update(&sms)
+	_, err := getDb().ID(sms.Id).Update(&sms)
 	if err != nil {
 		fmt.Println("修改验证码信息失败")
 	}
@@ -62,7 +62,7 @@ func UpdateSmsCode(sms SmsCode) {
 
 func DeleteSmsCode(id int) {
 	sms := new(SmsCode)
-	_, err := GetDb().ID(id).Delete(sms)
+	_, err := getDb().ID(id).Delete(sms)
 	if err != nil {
 		fmt.Println("删除验证码信息失败")
 	}
