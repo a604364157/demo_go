@@ -1,6 +1,8 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type SmsCode struct {
 	Id         int    `xorm:"pk autoincr" json:"id"`
@@ -11,16 +13,13 @@ type SmsCode struct {
 	CreateTime string `xorm:"bigint" json:"create_time"`
 }
 
-func QuerySmsCodeById(id int) SmsCode {
+func QuerySmsCodeById(id int) (SmsCode, error) {
 	var sms SmsCode
 	_, err := getDb().ID(id).Get(&sms)
-	if err != nil {
-		fmt.Println("查询验证码信息失败")
-	}
-	return sms
+	return sms, err
 }
 
-func QuerySmsCode(sms SmsCode) map[int64]SmsCode {
+func QuerySmsCode(sms SmsCode) ([]SmsCode, error) {
 	session := getDb().Cols("id", "phone", "email", "biz_id", "code", "create_time")
 	if sms.Id != 0 {
 		session = session.Where("id = ?", sms.Id)
@@ -34,19 +33,17 @@ func QuerySmsCode(sms SmsCode) map[int64]SmsCode {
 	if sms.BizId != "" {
 		session = session.Where("biz_id = ?", sms.BizId)
 	}
-	smses := make(map[int64]SmsCode)
+	var smses []SmsCode
 	err := session.Find(&smses)
-	if err != nil {
-		fmt.Println("查询验证码信息失败")
-	}
-	return smses
+	return smses, err
 }
 
-func InsertSmsCode(sms SmsCode) {
+func InsertSmsCode(sms SmsCode) error {
 	_, err := getDb().Insert(&sms)
 	if err != nil {
-		fmt.Println("写入验证码信息失败")
+
 	}
+	return err
 }
 
 func UpdateSmsCode(sms SmsCode) {

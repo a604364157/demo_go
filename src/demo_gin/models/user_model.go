@@ -23,7 +23,7 @@ func QueryUserById(id int) User {
 	return *user
 }
 
-func QueryUser(user User) map[int64]User {
+func QueryUser(user User) []User {
 	session := getDb().Cols("id", "user_name", "password", "mobile", "avatar", "balance", "is_active", "city", "register_time")
 	if user.Id != 0 {
 		session = session.Where("id = ?", user.Id)
@@ -49,8 +49,8 @@ func QueryUser(user User) map[int64]User {
 	if user.City != "" {
 		session = session.Where("city = ?", user.City)
 	}
-	users := make(map[int64]User)
-	err := session.Find(&user)
+	var users []User
+	err := session.Find(&users)
 	if err != nil {
 		fmt.Println("查询用户信息失败")
 	}
