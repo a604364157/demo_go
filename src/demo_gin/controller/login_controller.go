@@ -15,6 +15,12 @@ func (c *LoginController) Router(engine *gin.Engine) {
 
 // 实现登录功能:用户名密码
 func (c *LoginController) LoginByPwd(context *gin.Context) {
+	userName := context.Query("userName")
+	password := context.Query("password")
+	if userName == "" || password == "" {
+		utils.ERROR(context, "用户名或密码错误")
+	}
+
 	utils.SUCCESS(context, "登录成功")
 }
 

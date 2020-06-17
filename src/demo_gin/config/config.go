@@ -24,6 +24,11 @@ type Config struct {
 	DbUser   string `json:"db_user"`
 	DbPass   string `json:"db_pass"`
 	DbDb     string `json:"db_db"`
+	//redis
+	RedisHost string `json:"redis_host"`
+	RedisPort string `json:"redis_port"`
+	RedisUser string `json:"redis_user"`
+	RedisPass string `json:"redis_pass"`
 }
 
 type MailConfig struct {
