@@ -9,7 +9,7 @@ type UserController struct {
 }
 
 func (c *UserController) Router(engine *gin.Engine) {
-	engine.GET("/user", c.Get)
+	engine.GET("/api/user", c.Get)
 }
 
 func (c *UserController) Get(context *gin.Context) {
