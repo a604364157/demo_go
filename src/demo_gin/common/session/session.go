@@ -14,6 +14,8 @@ func InitSession(engine *gin.Engine) {
 	if err != nil {
 		panic(err)
 	}
+	// 设置有效时间
+	store.Options(sessions.Options{MaxAge: 60 * 10})
 	engine.Use(sessions.Sessions("session", store))
 }
 
