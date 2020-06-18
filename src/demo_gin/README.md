@@ -9,9 +9,16 @@
     
     gomail go get -u gopkg.in/gomail.v2
     
-    因为网络问题,很多依赖down不下来
-    直接运行main函数,会出现很多找不到包
-    然后根据提示路径,下载依赖包到对应路径即可
+    直接使用代理https://goproxy.io
+    安装1.13版本以上的golang环境,开启module和代理
+    设置环境变量
+    GO111MODULE=on
+    GOPROXY=https://goproxy.io
+    开发工具也需要在设置里开启module并设置代理
+    使用 go mod init [项目目录名]
+    初始化module后,项目下会出现一个go.mod文件
+    该文件是用来管理项目依赖的
+    请按该教程设置,本项目不再说明使用的依赖
     
 
 ###二,配置文件config/app.json(数据同步至config/config.go内的结构体,请自行添加相关配置)
