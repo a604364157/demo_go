@@ -6,6 +6,8 @@ import (
 	"demo_gin/common/utils"
 	"demo_gin/models"
 	"github.com/gin-gonic/gin"
+	"strings"
+	"time"
 )
 
 type LoginController struct {
@@ -30,7 +32,7 @@ func (c *LoginController) Captcha(context *gin.Context) {
 // 实现登录功能:用户名密码
 func (c *LoginController) LoginByPwd(context *gin.Context) {
 	// 校验验证码
-	verify(context)
+	c.VerifyCa(context)
 	userName := context.Query("userName")
 	password := context.Query("password")
 	if userName == "" || password == "" {
@@ -51,10 +53,20 @@ func (c *LoginController) LoginByPwd(context *gin.Context) {
 
 // 实现登录功能:邮箱和验证码
 func (c *LoginController) LoginByCode(context *gin.Context) {
-	http.SUCCESS(context, "登录成功")
+	c.VerifyEmail(context)
+	// 验证通过后,判断是否为注册用户
+	userName := context.Query("userName")
+	users := models.QueryUser(models.User{UserName: userName})
+	if len(users) > 0 {
+		session.SetSession(context, userName, users[0])
+		http.SUCCESS(context, "登录成功")
+	} else {
+		// 非注册用户让用户跳转信息完善页面(信息完善后再存入session信息)
+		http.SUCCESS(context, "前往注册")
+	}
 }
 
-func verify(context *gin.Context) {
+func (c *LoginController) VerifyCa(context *gin.Context) {
 	caId := context.Query("captchaId")
 	caValue := context.Query("captchaValue")
 	if caId == "" || caValue == "" {
@@ -66,6 +78,33 @@ func verify(context *gin.Context) {
 	ca.VerifyValue = caValue
 	v := utils.VerifyCaptcha(ca)
 	if !v {
+		http.ERROR(context, "验证码错误")
+	}
+}
+
+// 验证邮箱验证码
+func (c *LoginController) VerifyEmail(context *gin.Context) {
+	userName := context.Query("userName")
+	code := context.Query("code")
+	// 验证用户名格式
+	if !utils.RegexpEmail(userName) {
+		http.ERROR(context, "用户名格式错误,请输入正确的邮箱格式")
+	}
+	// 通过用户名查询验证信息
+	email := models.SmsCode{Email: userName}
+	smsCodes, _ := models.QuerySmsCode(email)
+	if len(smsCodes) < 1 {
+		http.ERROR(context, "验证码错误")
+	}
+	smsCode := smsCodes[0]
+	// 验证有效时间
+	t := smsCode.CreateTime
+	now := time.Now().Unix()
+	if now-t > 2*60*1000 {
+		http.ERROR(context, "验证码已过有效期, 请重新获取")
+	}
+	// 验证验证码
+	if !strings.EqualFold(code, smsCode.Code) {
 		http.ERROR(context, "验证码错误")
 	}
 }

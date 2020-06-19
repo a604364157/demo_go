@@ -4,6 +4,7 @@ import (
 	"demo_gin/common/http"
 	"demo_gin/common/utils"
 	"demo_gin/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"time"
 )
@@ -15,7 +16,7 @@ func (c *SmsCodeController) Router(engine *gin.Engine) {
 	engine.GET("/api/sms/code", c.send)
 }
 
-// 发送验证码
+// 发送邮件验证码
 func (c *SmsCodeController) send(context *gin.Context) {
 	// 验证用户名格式
 	userName := context.Query("userName")
@@ -24,6 +25,29 @@ func (c *SmsCodeController) send(context *gin.Context) {
 	}
 	// 生成数字验证码
 	code := utils.RandString(6)
-	// 写入数据库
-	models.InsertSmsCode(models.SmsCode{Email: userName, Code: code, CreateTime: time.Now().Unix()})
+	// 通过用户名查询历史验证信息
+	email := models.SmsCode{Email: userName}
+	smsCodes, err := models.QuerySmsCode(email)
+	if len(smsCodes) > 0 {
+		// 修改数据
+		smsCode := smsCodes[0]
+		smsCode.Code = code
+		smsCode.CreateTime = time.Now().Unix()
+		err = models.UpdateSmsCode(smsCode)
+		if err != nil {
+			http.ERROR(context, "系统异常,请稍后重试或联系管理员")
+		}
+	} else {
+		// 写入数据库
+		err = models.InsertSmsCode(models.SmsCode{Email: userName, Code: code, CreateTime: time.Now().Unix()})
+		if err != nil {
+			http.ERROR(context, "系统异常,请稍后重试或联系管理员")
+		}
+	}
+	// 发送验证码
+	users := []string{userName}
+	err = utils.SendMail(users, "demo_gin登录验证", fmt.Sprintf("你好: 你的登录验证码为[%s], 验证码有效期为2分钟!如非本人操作请忽略本消息。", code))
+	if err != nil {
+		http.ERROR(context, "系统异常,请稍后重试或联系管理员")
+	}
 }
