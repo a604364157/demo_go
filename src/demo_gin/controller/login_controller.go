@@ -5,6 +5,7 @@ import (
 	"demo_gin/common/session"
 	"demo_gin/common/utils"
 	"demo_gin/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strings"
 	"time"
@@ -66,6 +67,12 @@ func (c *LoginController) LoginByCode(context *gin.Context) {
 	}
 }
 
+func (c *LoginController) register(context *gin.Context) {
+	body := context.Request.GetBody
+	fmt.Println(body())
+}
+
+// 验证图形验证码
 func (c *LoginController) VerifyCa(context *gin.Context) {
 	caId := context.Query("captchaId")
 	caValue := context.Query("captchaValue")
