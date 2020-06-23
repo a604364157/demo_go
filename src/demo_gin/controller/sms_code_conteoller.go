@@ -22,6 +22,7 @@ func (c *SmsCodeController) send(context *gin.Context) {
 	userName := context.Query("userName")
 	if !utils.RegexpEmail(userName) {
 		http.ERROR(context, "用户名格式错误,请输入正确的邮箱格式")
+		return
 	}
 	// 生成数字验证码
 	code := utils.RandString(6)
@@ -36,12 +37,14 @@ func (c *SmsCodeController) send(context *gin.Context) {
 		err = models.UpdateSmsCode(smsCode)
 		if err != nil {
 			http.ERROR(context, "系统异常,请稍后重试或联系管理员")
+			return
 		}
 	} else {
 		// 写入数据库
 		err = models.InsertSmsCode(models.SmsCode{Email: userName, Code: code, CreateTime: time.Now().Unix()})
 		if err != nil {
 			http.ERROR(context, "系统异常,请稍后重试或联系管理员")
+			return
 		}
 	}
 	// 发送验证码
@@ -49,5 +52,6 @@ func (c *SmsCodeController) send(context *gin.Context) {
 	err = utils.SendMail(users, "demo_gin登录验证", fmt.Sprintf("你好: 你的登录验证码为[%s], 验证码有效期为2分钟!如非本人操作请忽略本消息。", code))
 	if err != nil {
 		http.ERROR(context, "系统异常,请稍后重试或联系管理员")
+		return
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"demo_gin/common/session"
 	"demo_gin/common/utils"
 	"demo_gin/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"time"
 )
@@ -25,6 +26,7 @@ func (c *UserController) Get(context *gin.Context) {
 	users := models.QueryUser(*user)
 	if len(users) < 1 {
 		http.ERROR(context, "用户名不存在")
+		return
 	}
 	user = &users[0]
 	// 用户信息不展示密码
@@ -39,20 +41,25 @@ func (c *UserController) Post(context *gin.Context) {
 	err := utils.JsonParse(context.Request.Body, &user)
 	if err != nil {
 		http.RESPONSE(context, 400, "参数序列化失败")
+		return
 	}
 	if user.UserName == "" {
 		http.ERROR(context, "用户名不能为空")
+		return
 	}
 	if !utils.RegexpEmail(user.UserName) {
 		http.ERROR(context, "用户名格式错误,请输入正确的邮箱格式")
+		return
 	}
 	if user.Password == "" {
 		http.ERROR(context, "用户密码不能为空")
+		return
 	}
 	// 验证用户名是否重复
 	users := models.QueryUser(user)
 	if len(users) >= 1 {
 		http.ERROR(context, "用户数据异常,请联系管理员调整")
+		return
 	}
 	flag := false
 	// 设置一个特殊标识,用于判断是否设置session
@@ -68,9 +75,25 @@ func (c *UserController) Post(context *gin.Context) {
 	err = models.InsertUser(user)
 	if err != nil {
 		http.ERROR(context, "注册失败")
+		return
 	}
 	// 设置session(用于短信验证码登录时自动注册+登录)
 	if flag {
 		session.SetSession(context, user.UserName, user)
+	}
+}
+
+// 上传头像
+func (c *UserController) uploadAvatar(context *gin.Context) {
+	//1、获取上传的文件
+	userName := context.Request.PostFormValue("userName")
+	file, header, err := context.Request.FormFile("avator")
+	if err != nil {
+		http.ERROR(context, "获取上传的头像文件失败")
+		return
+	}
+	if userName != "" {
+		user := session.GetSession(context, userName).(models.User)
+		fmt.Println(file, header, user)
 	}
 }

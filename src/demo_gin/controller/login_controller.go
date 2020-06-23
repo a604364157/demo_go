@@ -26,6 +26,7 @@ func (c *LoginController) Captcha(context *gin.Context) {
 	err := utils.GenerateCaptcha(ca)
 	if err != nil {
 		http.ERROR(context, "获取验证码失败,请稍后再试")
+		return
 	}
 	http.SUCCESS(context, ca)
 }
@@ -33,19 +34,24 @@ func (c *LoginController) Captcha(context *gin.Context) {
 // 实现登录功能:用户名密码
 func (c *LoginController) LoginByPwd(context *gin.Context) {
 	// 校验验证码
-	c.VerifyCa(context)
+	if !c.VerifyCa(context) {
+		return
+	}
 	userName := context.Query("userName")
 	password := context.Query("password")
 	if userName == "" || password == "" {
 		http.ERROR(context, "请输入完整用户名或密码")
+		return
 	}
 	user := models.User{UserName: userName, Password: utils.MD5(password)}
 	users := models.QueryUser(user)
 	if len(users) < 1 {
 		http.ERROR(context, "用户名或密码错误")
+		return
 	}
 	if len(users) > 1 {
 		http.ERROR(context, "用户数据异常,请联系管理员调整")
+		return
 	}
 	// 写入session
 	session.SetSession(context, userName, users[0])
@@ -54,7 +60,9 @@ func (c *LoginController) LoginByPwd(context *gin.Context) {
 
 // 实现登录功能:邮箱和验证码
 func (c *LoginController) LoginByCode(context *gin.Context) {
-	c.VerifyEmail(context)
+	if !c.VerifyEmail(context) {
+		return
+	}
 	// 验证通过后,判断是否为注册用户
 	userName := context.Query("userName")
 	users := models.QueryUser(models.User{UserName: userName})
@@ -73,11 +81,12 @@ func (c *LoginController) register(context *gin.Context) {
 }
 
 // 验证图形验证码
-func (c *LoginController) VerifyCa(context *gin.Context) {
+func (c *LoginController) VerifyCa(context *gin.Context) bool {
 	caId := context.Query("captchaId")
 	caValue := context.Query("captchaValue")
 	if caId == "" || caValue == "" {
 		http.ERROR(context, "请输入验证码")
+		return false
 	}
 	// 校验验证码
 	ca := new(utils.Captcha)
@@ -86,22 +95,26 @@ func (c *LoginController) VerifyCa(context *gin.Context) {
 	v := utils.VerifyCaptcha(ca)
 	if !v {
 		http.ERROR(context, "验证码错误")
+		return false
 	}
+	return true
 }
 
 // 验证邮箱验证码
-func (c *LoginController) VerifyEmail(context *gin.Context) {
+func (c *LoginController) VerifyEmail(context *gin.Context) bool {
 	userName := context.Query("userName")
 	code := context.Query("code")
 	// 验证用户名格式
 	if !utils.RegexpEmail(userName) {
 		http.ERROR(context, "用户名格式错误,请输入正确的邮箱格式")
+		return false
 	}
 	// 通过用户名查询验证信息
 	email := models.SmsCode{Email: userName}
 	smsCodes, _ := models.QuerySmsCode(email)
 	if len(smsCodes) < 1 {
 		http.ERROR(context, "验证码错误")
+		return false
 	}
 	smsCode := smsCodes[0]
 	// 验证有效时间
@@ -109,9 +122,12 @@ func (c *LoginController) VerifyEmail(context *gin.Context) {
 	now := time.Now().Unix()
 	if now-t > 2*60*1000 {
 		http.ERROR(context, "验证码已过有效期, 请重新获取")
+		return false
 	}
 	// 验证验证码
 	if !strings.EqualFold(code, smsCode.Code) {
 		http.ERROR(context, "验证码错误")
+		return false
 	}
+	return true
 }
