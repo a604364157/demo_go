@@ -1,6 +1,7 @@
 package main
 
 import (
+	"demo_gin/common/http"
 	"demo_gin/common/session"
 	"demo_gin/config"
 	"demo_gin/routers"
@@ -12,6 +13,8 @@ func main() {
 	cfg := config.GetConfig()
 	// 实例app
 	app := gin.Default()
+	// 全局跨域设置
+	app.Use(http.Cors())
 	// 注册路由
 	routers.RegisterRouter(app)
 	// 初始化session

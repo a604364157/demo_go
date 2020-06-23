@@ -56,3 +56,8 @@ func QueryUser(user User) []User {
 	}
 	return users
 }
+
+func InsertUser(user User) error {
+	_, err := getDb().Insert(user)
+	return err
+}

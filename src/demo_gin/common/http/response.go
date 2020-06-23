@@ -15,3 +15,7 @@ func ERROR(context *gin.Context, msg interface{}) {
 		"msg":  msg,
 	})
 }
+
+func RESPONSE(context *gin.Context, code int, msg interface{}) {
+	context.JSON(code, msg)
+}
