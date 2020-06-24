@@ -5,8 +5,9 @@ import (
 	"demo_gin/common/session"
 	"demo_gin/common/utils"
 	"demo_gin/models"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"io"
+	"os"
 	"time"
 )
 
@@ -87,13 +88,22 @@ func (c *UserController) Post(context *gin.Context) {
 func (c *UserController) uploadAvatar(context *gin.Context) {
 	//1、获取上传的文件
 	userName := context.Request.PostFormValue("userName")
-	file, header, err := context.Request.FormFile("avator")
+	file, header, err := context.Request.FormFile("avatar")
 	if err != nil {
 		http.ERROR(context, "获取上传的头像文件失败")
 		return
 	}
+	//2、将文件保存到本地
+	fileFullPath := "./uploadfile/" + header.Filename
+	out, err := os.Create(fileFullPath)
+	defer out.Close()
+	_, err = io.Copy(out, file)
+	// 用户名不为空则走已登录流程
 	if userName != "" {
 		user := session.GetSession(context, userName).(models.User)
-		fmt.Println(file, header, user)
+		if user.UserName == "" {
+			http.ERROR(context, "你未登录或登录已失效")
+			return
+		}
 	}
 }
