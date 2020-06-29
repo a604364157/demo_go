@@ -9,12 +9,12 @@ import (
 	"time"
 )
 
-const SOLT = "demo_gin"
+const SALT = "demo_gin"
 
 // md5加密
 func MD5(str string) string {
 	w := md5.New()
-	io.WriteString(w, str+SOLT)
+	io.WriteString(w, str+SALT)
 	md5Srt := fmt.Sprintf("%x", w.Sum(nil))
 	return md5Srt
 }
