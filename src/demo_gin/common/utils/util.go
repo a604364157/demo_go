@@ -3,6 +3,7 @@ package utils
 import (
 	"crypto/md5"
 	"fmt"
+	"github.com/satori/go.uuid"
 	"io"
 	"math/rand"
 	"regexp"
@@ -35,4 +36,10 @@ func RandString(len int) string {
 		bytes[i] = byte(b)
 	}
 	return string(bytes)
+}
+
+// 生成UUID
+func GetUUID() string {
+	u2 := uuid.NewV4()
+	return u2.String()
 }

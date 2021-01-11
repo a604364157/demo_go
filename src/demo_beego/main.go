@@ -15,7 +15,7 @@ func main() {
 
 /*
 程序先找到routers包,根据路径映射到相应的controller
-controllers包下的MainController只有一个GET方法
+controllers包下的MainController只有一个GET方法go
 	c.Data["Website"] = "beego.me"
 	c.Data["Email"] = "astaxie@gmail.com"
 	c.TplName = "index.tpl"

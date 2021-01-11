@@ -10,7 +10,7 @@ import (
 // 初始化session
 func InitSession(engine *gin.Engine) {
 	cfg := config.GetConfig()
-	store, err := redis.NewStore(10, "tcp", cfg.RedisHost+":"+cfg.RedisPort, "", []byte("secret"))
+	store, err := redis.NewStore(10, "tcp", cfg.RedisHost+":"+cfg.RedisPort, cfg.RedisPass, []byte("secret"))
 	if err != nil {
 		panic(err)
 	}

@@ -88,16 +88,25 @@ func (c *UserController) Post(context *gin.Context) {
 func (c *UserController) uploadAvatar(context *gin.Context) {
 	//1、获取上传的文件
 	userName := context.Request.PostFormValue("userName")
-	file, header, err := context.Request.FormFile("avatar")
+	file, _, err := context.Request.FormFile("avatar")
 	if err != nil {
 		http.ERROR(context, "获取上传的头像文件失败")
 		return
 	}
 	//2、将文件保存到本地
-	fileFullPath := "./uploadfile/" + header.Filename
+	fileId := utils.GetUUID()
+	fileFullPath := "./upload/" + fileId
 	out, err := os.Create(fileFullPath)
+	if err != nil {
+		http.ERROR(context, "系统内部异常")
+		return
+	}
 	defer out.Close()
 	_, err = io.Copy(out, file)
+	if err != nil {
+		http.ERROR(context, "系统内部异常")
+		return
+	}
 	// 用户名不为空则走已登录流程
 	if userName != "" {
 		user := session.GetSession(context, userName).(models.User)
@@ -105,5 +114,8 @@ func (c *UserController) uploadAvatar(context *gin.Context) {
 			http.ERROR(context, "你未登录或登录已失效")
 			return
 		}
+	} else {
+		// 未登录流程: 将fileId返回
+		http.SUCCESS(context, "")
 	}
 }
